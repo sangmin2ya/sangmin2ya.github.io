@@ -49,13 +49,13 @@ author:
 # Add links to the sidebar.
 menu:
   - title:             ABOUT
-    url:               /ABOUT/
+    url:               /about/
   - title:             STUDY LOG
-    url:               /STUDYLOG/
+    url:               /studylog/
   - title:             GAME DEVELOG
-    url:               /GAMEDEVELOG/
+    url:               /gamedevelog/
   - title:             GAME ANALISYS
-    url:               /GAMEANALISYS/
+    url:               /gameanalisys/
 
 
 # Add links to the footer.
