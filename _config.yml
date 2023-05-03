@@ -28,7 +28,7 @@ description:           >
   sangmin's small start of develog.
 
 # A shorter description for the sidebar.
-tagline:               Develog!
+tagline:               Develog / Game blog
 
 # A list of keywords for your blog
 keywords:              []
@@ -49,11 +49,11 @@ author:
 # Add links to the sidebar.
 menu:
   - title:             알고리즘
-    url:               /example/
+    url:               /ALGORYTHM/
   - title:             게임 개발
-    url:               /docs/
+    url:               /GAME BUILD/
   - title:             게임 분석
-    url:               /about/
+    url:               /GAME ANAL/
 
 # Add links to the footer.
 # Typically you'll want to link to your cookie- or privacy policy (if appliable), etc..
@@ -87,7 +87,7 @@ remote_theme: hydecorp/hydejack@v9
 # ----------------------------------------------------------------------------------------
  
 # Sidebar image and theme color of the site.
-accent_image:          /assets/img/sidebar-bg.png
+accent_image:          /assets/img/sidebar-bg.jpg
 accent_color:          rgb(79,177,186)
 
 # This is used for the `theme-color` meta tag,
