@@ -1,5 +1,5 @@
 ---
-layout: welcome
+layout: About
 title:  About
 permalink: /about/
 sidebar: true 
