@@ -23,7 +23,7 @@ author1:
   # Comment/uncommet to show/hide
   # Rearrange to change the order in which they appear
   social:
-    twitter:         sangmin2ya_
+    #twitter:         sangmin2ya_
     github:          sangmin2ya
     email:           netboy0524@gmail.com
     # rss:             https://<url>/feed.xml
@@ -36,7 +36,7 @@ author1:
     # spotify:         <user>/<number>
     # soundcloud:      <username>
     # lastfm:          <username>
-    # instagram:       <username>
+    instagram:       sangmin1ya
     # flickr:          <string@string>
     # 500px:           <username>
     # dribbble:        <username>
