@@ -54,8 +54,8 @@ menu:
     url:               /studylog/
   - title:             GAME DEVELOG
     url:               /gamedevelog/
-  - title:             GAME ANALISYS
-    url:               /gameanalisys/
+  - title:             GAME ANALYSIS
+    url:               /gameanalysis/
 
 
 # Add links to the footer.

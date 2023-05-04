@@ -11,3 +11,9 @@ I'm currently working at **[SAP Labs Korea]**, and am cse student of **[INHA Uni
 I like to solve brain teasing problems in field of CSE (probably the reason I liked multi-core programming / OS courses).<br>
 And I'm also a [heavy gamer]!<br>
 Pleaseh check my [resume] if you wish to know more about me.
+
+
+
+<br><br><br>
+## 박상민
+<!--author-->

@@ -3,14 +3,14 @@
 layout: list
 
 # The title of the tag's page.
-title: GAME ANALISYS
+title: GAME ANALYSIS
 
 # The name of the tag, used in a post's front matter (e.g. tags: [<slug>]).
-slug: GAME
+slug: gameanalysis
 
 # (Optional) Write a short (~150 characters) description of this featured tag.
 description: >
-  This is a GAME ANALIZE.
+  This is a GAME ANALYSIS.
 
 # (Optional) You can disable grouping posts by date.
 # no_groups: true
