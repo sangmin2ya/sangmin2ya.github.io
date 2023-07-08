@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Example Content III
+categories: gameanalysis
 description: >
   A page showing Hydejack-specific markdown content.
 image: 

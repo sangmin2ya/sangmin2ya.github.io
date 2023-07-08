@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Introducing Hydejack 9
+categories: gameanalysis
 image: 
   path: /assets/img/blog/jeremy-bishop@0,5x.jpg
 description: >
