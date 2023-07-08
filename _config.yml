@@ -56,7 +56,7 @@ menu:
     url:               /gamedevelog/
   - title:             GAME ANALYSIS
     url:               /gameanalysis/
-  -title:              BAEKJOON
+  - title:              BAEKJOON
     url:               /baekjoon/
 
 
