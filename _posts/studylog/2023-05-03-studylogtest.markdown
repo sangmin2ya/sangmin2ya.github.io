@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "STUDY LOG POST TEST!"
-date:   2023-05-03 07:42:57 +0900
+title:  "오퍼레이팅 시스템[0] - preview"
+date:   2023-07-08 08:46:00 +0900
 categories: studylog
 ---
 You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve`, which launches a web server and auto-regenerates your site when a file is updated.
