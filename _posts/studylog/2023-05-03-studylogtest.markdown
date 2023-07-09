@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "오퍼레이팅 시스템[0] - preview"
+title:  "study log test"
 date:   2023-07-08 08:46:00 +0900
 categories: studylog
 ---
