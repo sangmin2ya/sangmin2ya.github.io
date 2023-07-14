@@ -1,0 +1,81 @@
+---
+layout: post
+related_posts:
+  - /studylog/2023-07-08-OS_0/
+  - /studylog/2023-07-14-OS_2/
+title:  "오퍼레이팅 시스템 [1] - 컴퓨터의 구조"
+date:   2023-07-14 08:46:00 +0900
+categories: studylog
+description: >
+  'Computer system overview'
+---
+* * *
+## 기본 구조
+컴퓨터는 크게 4개의 구성요소로 구분할 수 있다.
+
+![](/assets/img/blog/OS/CPU.jpg){:.lead width="4" height="10"}
+
+CPU 
+: 기억장치로 부터 명령어를 읽어와 실제로 명령어 해독, 처리, 저장까지 수행하는 중앙 처리 장치 (Central Process Unit) 
+
+메모리 
+: CPU가 사용하기 위한 명령어, DATA, 연산결과 등의 정보를 저장해두는 기억장치
+
+I/O 모듈 
+: 컴퓨터의 입출력을 가능하게 하는 모든 장치. 마우스, 키보드로 입력받는 USB controller, 모니터로 출력하는 Graphic adapter, 디스크에 저장되어있는 data에 접근하는 Disk controller 가 포함된다.
+
+BUS 
+: 위 3개의 요소를 잇는 통로 ex) System bus, Memory bus, I/O bus
+
+## 동작과정
+
+1. **하드에 저장된 실행파일을 실행한다.**
+2. **해당 실행파일에 대한 data가 메모리에 쌓인다.**
+3. **Fetch 되어 CPU에서 실행된다.**
+**(이때 모든 명령어는 CPU에 의해 실행되며, 실행되기 전에 메모리에 저장되어 CPU는 메모리접근이 필수적이다.)**
+
+ *CPU에 포함되어있는 특수목적 레지스터 **PC(program counter)**에 다음 실행할 명령어의 주소가 저장되고, 명령어가 **IR(instructor register)**에 저장되어 실행.
+
+## 레지스터의 종류
+
+**레지스터**란 CPU가 명령어를 수행하는데 필요한 데이터를 일시적으로 저장하는 기억장치이다.
+  
+### 범용 레지스터(Genaral purpose Register)
+프로그래머가 메모리 참조를 최소화할수 있도록 해주며, 데이터값이나 계산의 중간결과등을 저장하는 목적으로 사용된다.
+
+### 특수 목적 레지스터(Special purpose Register)
+* **Program Counter(PC)** : 다음에 FETCH될 명령어의 주소를 저장
+* **Instruction Register(IR)** : 가장 최근에 FETCH된 명령어를 저장
+* **Program Status Word(PSW)** : CPU의 현재 상태를 저장
+* **Memory Address Register(MAR)** : 현재 실행되는 명령어의 주소를 저장
+* **Memory Buffer Register(MBR)** : MAR에 저장되어 있는 명령어 내부의 (사용될) contents를 저장
+
+**MAR**과 **MBR**이 **PC**로부터 주소값을 전달받아 실제로 일을 수행하는 역할을 한다.
+
+## ISA(Instruction Set Architecture)
+
+### 명령어 집합구조
+
+SW 와 HW 사이의 **Interface**를 정의하는것.  프로세서가 이해할 수 있는 명령어들의 집합을 말한다. 즉 하나의 프로세서에서는 해당 프로세서가 지원하는 ISA로 구성된 소프트웨어만 실행할 수 있고, ISA가 다른 소프트웨어는 실행이 불가능하다.
+
+왜냐면 **Interface**가 다르니까!
+
+### Instruction 형식
+
+![](/assets/img/blog/OS/instructor format.jpg){:.lead width="4" height="10"} 
+명령어 형식과 정수 형식의 비교 및 opcode 예시
+{:.figcaption}
+
+1. **Opcode** : 명령어코드. 실행될 행동을 명시한다. ex) mov, add, jump 등
+2. **Operands** : 피연산자. input/output data와 그들의 주소를 명시한다.
+
+### Instruction 실행과정
+
+![](/assets/img/blog/OS/program execution.png)
+
+프로그램 작동과정
+{:.figcaption}
+
+1. **PC** 레지스터에 저장되어있는 주소의 명령어를 **IR**로 **FETCH** 해온다. 이때 **PC**값은 거의 바로 다음 실행될 명령어의 주소로 바뀐다. (+4)
+2. **IR**에 저장된 명령어가 실행되고, **Opcode**에 따라 **Operands**의 data가 **AC(범용레지스터)**에 적재/연산되거나 메모리에 다시 저장된다.
+3. 바뀐 **PC**값에 따라 다음 명령어가 다시 실행되며 계속반복된다.

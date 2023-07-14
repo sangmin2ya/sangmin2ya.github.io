@@ -1,0 +1,19 @@
+---
+layout: post
+related_posts:
+  - /studylog/2023-07-08-OS_0/
+  - /studylog/2023-07-14-OS_1/
+title:  "오퍼레이팅 시스템 [2] - Interrupt and Exception"
+date:   2023-07-14 08:46:00 +0900
+categories: studylog
+description: >
+  'Interrupt 와 Exception에 대한 정의와 작동원리'
+---
+* * *
+## INTERRUPT
+
+OS에게 현재 실행중인 **Process**를 중지시키고, **Interrupt**를 해결하기위해 **Interrupt Handler**를 실행시키도록 하는 Event.
+
+
+
+### 
