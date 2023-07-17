@@ -1,7 +1,7 @@
 ---
 layout: post
 related_posts:
-  - /studylog/2023-07-14-OS_1/
+  - /studylog/OS_1/
 title:  "오퍼레이팅 시스템 [0] - preview"
 date:   2023-07-08 08:46:00 +0900
 categories: studylog
@@ -32,7 +32,7 @@ description: >
 
 ## Chapter별 학습과정
 
-#### Computer system overview
+#### [Computer system overview](/studylog/OS_1/)
 {:.note title="Chapter 1"}
 기본적인 컴퓨터 구조에 대해 학습합니다.
 
