@@ -36,11 +36,11 @@ description: >
 {:.note title="Chapter 1"}
 기본적인 컴퓨터 구조에 대해 학습합니다.
 
-#### Operating System overview
+#### [Operating System overview](/studylog/OS_4/)
 {:.note title="Chapter 2"}
 OS의 목적과 그 진화 과정에 대해 학습합니다.
 
-#### Process Description and Control
+#### [Process Description and Control](/studylog/OS_5/)
 {:.note title="Chapter 3"}
 프로세스의 정의와 작동방식에 대해 학습합니다.
 

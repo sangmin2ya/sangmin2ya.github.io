@@ -1,8 +1,8 @@
 ---
 layout: post
 related_posts:
-  - /studylog/OS_0/
   - /studylog/OS_1/
+  - /studylog/OS_3/
 title:  "오퍼레이팅 시스템 [2] - Interrupt 란?"
 date:   2023-07-14 08:46:00 +0900
 categories: studylog
@@ -10,6 +10,9 @@ description: >
   'Interrupt 와 Exception에 대한 정의와 작동원리'
 ---
 * * *
+* toc
+{:toc}
+
 ## INTERRUPT
 
 OS에게 현재 실행중인 **Process**를 중지시키고, **Interrupt**를 해결하기위해 **Interrupt Handler**를 실행시키도록 하는 Event.
@@ -85,15 +88,15 @@ Softward 에서 처리 (1 ~ 3의 과정 = **ISR**)
 
 ### Multiple Interrupt
 
-![](/assets/img/blog/OS/Multi interrupt.png)
+![](/assets/img/blog/OS/Multi Interrupt.png)
 
-1. Sequential Interrupt Processing (직렬처리) 
+1. **Sequential Interrupt Processing (직렬처리)**
 * Interrupt 하나가 처리중일때, 다른 Interrupt 신호는 비활성화된다. 
-* 단점 : Interrupt 간의 우선순위나 시간중요도를 무시하게된다.
+* 단점 : Interrupt 간의 **우선순위**나 **시간중요도**를 무시하게된다.
 
-2. Nested Interrput Processing (중첩처리)
+2. **Nested Interrput Processing (중첩처리)**
 * Interrupt 간의 우선순위를 고려한다.
-* Interrupt ISR 실행중, 우선순위가 더 높은 Interrupt 신호 발생시 해당 ISR을 실행한다. 우선순위가 낮을경우 도중에 발생하더라도 **Pending**한다.
+* Interrupt ISR 실행중, **우선순위**가 더 높은 Interrupt 신호 발생시 해당 ISR을 실행한다. 우선순위가 낮을경우 도중에 발생하더라도 **Pending**한다.
 
 ### Interrupt의 장단점 분석 
 
