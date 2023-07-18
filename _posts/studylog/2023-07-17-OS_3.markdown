@@ -1,0 +1,123 @@
+---
+layout: post
+related_posts:
+  - /studylog/OS_2/
+  - /studylog/OS_4/
+title:  "오퍼레이팅 시스템 [3] - 메모리 계층구조"
+date:   2023-07-17 14:00:00 +0900
+categories: studylog
+description: >
+  '메모리의 계층구조와 그 구성'
+---
+* * *
+* toc
+{:toc}
+
+## 컴퓨터의 메모리
+**메모리**란 data 와 Program들을 저장하는 저장장치로,
+메모리를 구성할때 고려해야 할 사항은 **용량, 크기당 가격, 접근시간** 3가지로, 컴퓨터의 사용목적과 상황에 따라 적절한 메모리를 사용해야 한다.
+
+* 용량은 작지만, 접근시간이 빠르고 비트당 가격이 비싼 **S-RAM**
+
+* 용량이 크지만, 접근시간이 오래걸리고 가격이 상대적으로 싼 **D-RAM**
+
+현대의 컴퓨터는 한 종류가 아닌 **복수의 메모리 기술 사용**을 채택하여 **계층구조(Hierarchy)**를 형성하였다.
+
+### 메모리 계층구조
+
+![](/assets/img/blog/OS/MemoryHierarchy.jpg)
+
+**메모리 계층구조** 란 상위계층으로 갈수록 용량은 작아지고, 비트당 가격이 증가하며, 접근시간이 줄어드며, 하위계층으로 갈수록 반대가 되는 구조다.
+
+상위 계층의 메모리를 CPU에 가까이 배치하고, 하위 계층의 메모리에 대한 접근을 최소화 함으로 효율을 최대화 할 수 있다.
+
+### 지역성
+
+그렇다면 어떻게 하위 계층의 메모리에 대한 접근을 최소화 할 수 있을까?
+
+* **지역성(Locality)**을 이용해 사용빈도가 높은 데이터를 상위 레벨에 배치한다.
+
+* 지역성의 2종류
+  1. **Temporal Locality** : **시간**에 대한 지역성으로 한번 접근된 Item은 곧 다시 접근될 확률이 높다고 판단하는것. `ex) 반복문`
+  2. **Spatial Locality** : **공간**에 대한 지역성으로, 접근된 Item 근처 주소의 Item은 접근될 확률이 높다고 판단하는것으로 해당 Item을 중심으로 블럭단위의 **PREFETCH**가 이루어진다. `ex) 배열, Table`
+
+## Average Access Time
+
+* **Hit**
+  : Data가 **상위 레벨**에서 발견되었을 경우.
+
+* **Miss** 
+  : Data가 **하위 레벨**에서 발견되었을 경우.
+  이때, 상위레벨 먼저 탐색해야 하므로 Access Time은 **T1+T2**가 되어야 한다.
+
+`H = hit rate`
+`M = miss rate ( 1 - H )`
+`T1 = 상위 레벨에 접근시간`
+`T2 = 하위 레벨에 접근시간` 
+
+![](/assets/img/blog/OS/AAT.jpg)
+
+> 2계층 구조를 사용하는 시스템에서의 평균접근시간 **T = (H * T1) + (M * (T1 + T2))**
+
+## Cache 메모리
+
+**Cache** : 프로세서가 매번 Instruction을 실행할때 메인메모리에 접근함으로 소요되는 시간을 단축하기 위해서 지역성이 높은 데이터를 저장하기 위한 상위레벨 메모리. 
+
+![](/assets/img/blog/OS/cache.png)
+
+단일 캐시와 3레벨 캐시 시스템
+{:.figure}
+
+### Cache 디자인
+메인 메모리에서 새로운 블럭이 **Cache**로 읽혀질때, **Mapping Function**에 따라 해당 블럭이 캐시의 어느곳에 저장될지 결정되고, **TAG**에 어느 블럭인지 식별할수 있는 번호가 저장된다.
+
+![](/assets/img/blog/OS/mapping function.png)
+
+* Mapping Function 예시
+  1. **Directed Mapped** : 캐시의 한줄이 한세트로, 메인메모리의 주소가 정확히 캐시의 한블럭에만 기록된다.
+
+  2. **2-way Set-Associative** : 캐시의 2줄이 한세트로, 메인메모리의 주소가 캐시의 2블럭에 들어갈 수 있다.
+  * 자세한 내용은 컴퓨터 구조 시간에 다루도록하겠다.
+  
+
+* 고려 조건
+  1. **Associativity** : **Mapping function**의 유연성이 올라갈수록, 이를 구현하는 **회로의 복잡도**가 올라간다.
+  2. **Cache 사이즈**: Cache 사이즈가 커질수록 **Hit rate**는 증가하지만, 사이즈가 큰 메모리일수록 빠르게 작동하게 만들기 어렵다.
+  3.  **Block 사이즈** : Block 사이즈가 커져 많은 data가 Prefetch 되면 **Hit rate**가 증가하겠지만, 그만큼 탐색해야 하는 공간이 늘어나므로 언제나 성능 향상을 보이진 않는다.
+
+### Cache 작성
+
+단순히 DATA를 읽을 뿐만이 아니라 해당 데이터를 수정할 경우에 대해 캐시 작동원리를 알아보자. 
+
+* **Write Hit**일때 : 수정/작성한 데이터의 주소가 캐시에 있을때
+  1. **Write through** : 그 즉시 메인메모리에 반영한다.
+    메인메모리에 대한 접근이 블럭이 업데이트 될때마다 발생한다.
+  2. **Write Back** : 미뤘다가 캐시가 교체될때 전부 반영한다.
+   해당 캐시의 데이터가 메인메모리와 같은지, 다른지에 대한 추가적인 **Dirty Bit**가 필요하다.
+* **Write Miss**일때
+  1. **Write allocate** : 캐시로 데이터를 가져오고, 캐시에서 수정한다.
+    해당 데이터가 여러번 수정될 경우 매우 유리하다.
+  2. **No-Write allocate** : 캐시사용없이 바로 메모리의 데이터를 수정한다.
+
+* 일반적으로는 **Write back + Write allocate** 방식을 사용한다.
+
+## I/O 장치
+
+### I/O controller 
+원래는 CPU에서 **직접 I/O장치에 접근**하여 작업을 처리했지만, I/O의 시작 ~ 끝 동안 **CPU**가 **Idle** 한 상태로 머물게 되어서 이를 효율적으로 해결하기 위해 **I/O Controller** 라는 **하드웨어**를 도입했다.
+
+* **Data, Status, Command register**의 3개의 레지스터를 갖고 있으며, CPU로부터 데이터와 명령을 받아 I/O 작업을 실행한다.
+
+### I/O Communication 기술
+
+![](/assets/img/blog/OS/IO tech.jpg)
+
+
+1. **Programmed I/O(Polling)** 
+: 프로세서가 계속해서 I/O 작동이 완료되었는지 **I/O controller status**를 확인하며 대기한다. **(Busy Waiting cycle)** 
+  *  그 외의 작업을 하지못하므로 장치가 느리다면 비효율적이다.
+2. **Interrupt-Driven I/O**
+: I/O 모듈에게 명령을 내리고, **I/O controller** 에서 작업을 완료하고 **Interrupt**를 보내기 전까지는 다른 작업을 하고있는다.
+  * CPU가 대기하지않고 다른 작업을 하므로 효율적이지만, 계속 **Interrupt** 발생시 **Mod Switch(User <-> Kernel)** 비용이 소요된다.
+3. **DMA(Direct Memory Access)**
+: **CPU의 개입없이** I/O 장치와 메모리사이에서 Data를 전달하며, 하나의 **블럭 전체**가 완료되었을때 CPU에게 **Interrupt**를 보내 알린다.

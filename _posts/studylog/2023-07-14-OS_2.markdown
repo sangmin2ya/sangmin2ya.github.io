@@ -49,7 +49,7 @@ I/O 장치에게 신호가 들어왔을때, 계속해서 **polling (대기)** �
 
 ### Interrupt 처리과정
 
-![](/assets/img/blog/OS/interrupt process.jpg)
+![](/assets/img/blog/OS/interrupt process.JPG)
 
 좌측 상단부터 순서대로,
 >1. **PIC**에 의해 **Interrupt** 신호가 전달된다.

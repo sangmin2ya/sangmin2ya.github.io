@@ -1,0 +1,18 @@
+---
+layout: post
+related_posts:
+  - /studylog/OS_3/
+  - /studylog/OS_5/
+title:  "오퍼레이팅 시스템 [4] - OS의 탄생"
+date:   2023-07-18 12:00:00 +0900
+categories: studylog
+description: >
+  'OS의 역할과 발전과정'
+---
+* * *
+* toc
+{:toc}
+
+## 오퍼레이팅 시스템
+
+지금까지는 운영체제를 이해하는데 필요한 기본적인 컴퓨터의 구조와 특징에 대해 다뤘다면, 지금부터는 본격적으로 OS에 대해 다루도록 하겠다.
