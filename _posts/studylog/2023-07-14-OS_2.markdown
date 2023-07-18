@@ -27,7 +27,7 @@ I/O 장치에게 신호가 들어왔을때, 계속해서 **polling (대기)** �
 
 ### Interrupt 매커니즘
 
-![](/assets/img/blog/OS/interrupt cycle.jpg)
+![](/assets/img/blog/OS/interrupt cycle.JPG)
 
 ### PIC (Programmable Interrupt Controller)
 
