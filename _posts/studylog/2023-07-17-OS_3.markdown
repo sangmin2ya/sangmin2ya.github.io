@@ -63,7 +63,7 @@ description: >
 
 **Cache** : 프로세서가 매번 Instruction을 실행할때 메인메모리에 접근함으로 소요되는 시간을 단축하기 위해서 지역성이 높은 데이터를 저장하기 위한 상위레벨 메모리. 
 
-![](/assets/img/blog/OS/cache.png)
+![](/assets/img/blog/OS/cache.PNG)
 
 단일 캐시와 3레벨 캐시 시스템
 {:.figure}
