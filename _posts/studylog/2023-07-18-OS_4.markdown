@@ -74,7 +74,9 @@ description: >
     * I/O의 종류 
       * Synchronous I/O : I/O 과정이 끝나야 제어권이 프로그램에게 돌아와 수행가능하다.
       * Asynchronous I/O : I/O 단계가 시작된 즉시 제어권이 다시 프로그램에게 돌아온다. 
-        ![](/assets/img/blog/OS/IO type.PNG)
+
+       
+ ![](/assets/img/blog/OS/IO type.png)
 
 
 * Simple Batch System의 문제
@@ -95,7 +97,7 @@ description: >
   3. **MMU(Memory Management Unit)** 
   : Adder, Comparator 등의 장치를 통해 프로그램에서 사용되는 **Logical Address**와 실제 메모리에 데이터가 저장되어 있는 **Physical Address**를 번역해주는 역할을 한다. 즉, 프로그램이 필요한 데이터에 접근할 수 있도록 해준다. 
 
-![](/assets/img/blog/OS/MMU.PNG)
+![](/assets/img/blog/OS/MMU.png)
 
   * 물론 MMU를 실행할때 Instruction이 실행되어서는 MMU를 통해 해당 주소에 접근할 수가 없으므로, **하드웨어**로 구현해야 한다.
 
