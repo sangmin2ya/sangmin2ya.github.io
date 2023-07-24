@@ -16,3 +16,154 @@ description: >
 ## 오퍼레이팅 시스템
 
 지금까지는 운영체제를 이해하는데 필요한 기본적인 컴퓨터의 구조와 특징에 대해 다뤘다면, 지금부터는 본격적으로 OS에 대해 다루도록 하겠다.
+
+### OS의 목적
+* 기계와 적용 프로그램의 **Interface** 역할을 하는 프로그램. 
+  하드웨어의 복잡한 디테일을 개발자들이 보기쉽고 간편하게 만든다
+* 가장 큰 목적은 **프로세서**에게 지시를 내려, 컴퓨터의 자원을 실행중인 프로그램들에게 **동적으로 분배 (Dynamically allocate)**해주는 것이다.
+* 따라서 운영체제의 연구분야는 자동적으로 **메모리, 프로세스, I/O 장치들의 스케쥴링과 관리**에 집중된다.
+
+* OS의 주 목적 3가지
+  1. **Covenence** : 컴퓨터 사용에 있어서의 편의성
+  2. **Efficency** : 컴퓨터 자원사용의 효율성
+  3. **Ability to evolve** : 새로운 시스템 기능이 추가되었을때 서비스에 문제없이 적용, 테스트 해볼수 있는 능력
+
+## OS의 진화과정
+
+![](/assets/img/blog/OS/evolution.PNG)
+
+**운영체제**는 몇가지 원인에 따라 계속해서 진화해 왔다.
+1. 새로운 종류의 H/W
+2. 새로운 서비스
+3. 수정
+* 일반적으로 OS의 기능들이 **H/W**로 이동되고, **S/W**로 처리했던 기능들은 OS의 기능에 포함되어왔다.
+
+### 1. SERIAL PROCESSING (순차처리)
+* Serial Processing (1940후반~ 1950중반)
+  * OS가 존재하지 않았고, 사람이 **Human Operater** 로서 OS의 역할을 대신했다.
+  * 모든 작업이 순차적이었고 개발자들은 직접 H/W를 다뤘다.
+  * **문제점** 
+    1. Human OS의 문제로 그당시 비싼 자원들을 효율적으로 사용하지 못했다.
+    2. 작업간 전환 속도가 너무 느렸다.
+      * High setup time과 비효율적은 scheduling 으로 인해 사용자간 낭비되는 시간이 많았다. (사용 시간이 초과되면 데이터 손실) 
+
+### 2. SIMPLE BATCH SYSTEM
+* 당시의 컴퓨터는 매우 비쌌으므로, 편의성 보다는 사용 효율을 극대화하는 것이 중요했다.
+* 비슷한 일을 모아서 시키자!
+  * 비슷한 작업들을 한번에 batching 하면서 SETUP TIME의 감소.
+  * 자동 작업 순차실행
+  ![](/assets/img/blog/OS/simple batch.PNG)
+* 최초의 OS탄생
+  * **FIRST BATCH OS** : 특정 기능을 하는 Data들이 항상 메인메모리에 존재해야 한다는 것을 깨닫고, 이를 **Resident Monitor**라고 불렀다. (OS대신 monitor라는 명칭을 사용) `ex) Interrupt processing, Device driver, Job seqencing...`
+  * 특정 작업이 실행되면, 제어권을 해당 작업에 넘겨주고, 작업이 마무리된 후 다시 **Monitor**에게 돌려준다.
+* OS의 등장으로 인한 필요 조건들
+  1. **Memory Protection** 
+  : 유저영역에서 Memory 일부를 차지하는 Monitor 영역에 침범할 수 없도록한다.
+  2. **I/O protection**(Privileged intructions)
+  : 유저 프로그램은 I/O에 직접 접근하지 못하고, 커널(모니터)에 요청해야한다.
+     * 해당 조건들은 **DUAL MODE**라는 개념을 만들어냈다.
+     : OS의 기능을 이용할 수 있는 **Kernel Mode** 와 기능이 제한적인 **User Mode**의 분리.
+  3. **CPU protection**
+  : 하나의 작업이 무한루프 되는 등의 이유로 CPU를 계속 독점하는 경우 예방
+    * **System Timer** 의 개념을 도입해, 유저의 CPU 사용시간을 제한하였다.
+    * 이때 Timer 는 당연히 OS만 접근할 수 있도록 제한하여야 한다.
+  4. **Interrupts**
+  : Interrupt를 보냄으로서 **유저 프로그램**을 중지하고 커널이 제어권을 돌려받을 수 있게함. 
+  5. **I/O device controller**
+  : 독립된 프로세서를 갖고있으며, I/O 과정이 끝나면, **CPU**에게 **Interrput**를 보내는 역할을 한다.
+    * I/O의 종류 
+      * Synchronous I/O : I/O 과정이 끝나야 제어권이 프로그램에게 돌아와 수행가능하다.
+      * Asynchronous I/O : I/O 단계가 시작된 즉시 제어권이 다시 프로그램에게 돌아온다. 
+        ![](/assets/img/blog/OS/IO type.PNG)
+
+
+* Simple Batch System의 문제
+  * **Automatic job sequencing** 방식에도 불구하고, 프로세서의 작업에 비해서 I/O 장치의 속도가 매우 느리다. 
+
+  이로인해 **CPU**가 종종 **IDLE**한 상태로 대기하게 된다.(Synchronous I/O의 경우) 
+  * **멀티 프로그램**의 필요성이 대두되었다.
+
+### 3. Multiprogrammed Batch Systems
+* CPU 효율을 최대로!
+  * **Uni-Programming** : 프로세서가 하나의 작업만을 하며, I/O 중에는 IDLE한 상태로 대기한다.
+  * **Multi-Programming** : 프로세서가 여러 작업을 수행하며, 하나의 작업이 I/O를 대기해야 하는경우, 다른 작업을 수행하는 방식으로 프로세서가 IDLE한 상태로 대기하는 시간을 단축한다. (=Multi Tasking)
+* 필요조건
+  1. **Relocation** 
+  : 계속해서 실행되는 작업이 달라지므로, 프로그래머는 매번 어디에 필요한 DATA가 저장되어 있는지 알 수가없다. 따라서 각 작업에 필요한 DATA들의 메모리 위치를 계속해서 변경해주어 프로세서의 효율을 최대화 시킬수 있어야한다.
+  2. **Memory Protection** 
+  : 계속해서 DATA의 주소가 변경되므로 다른 작업의 주소를 침범하지 않게 보호하고 확인하는 과정의 필요성이 더욱 증가했다.
+  3. **MMU(Memory Management Unit)** 
+  : Adder, Comparator 등의 장치를 통해 프로그램에서 사용되는 **Logical Address**와 실제 메모리에 데이터가 저장되어 있는 **Physical Address**를 번역해주는 역할을 한다. 즉, 프로그램이 필요한 데이터에 접근할 수 있도록 해준다. 
+
+![](/assets/img/blog/OS/MMU.PNG)
+
+  * 물론 MMU를 실행할때 Instruction이 실행되어서는 MMU를 통해 해당 주소에 접근할 수가 없으므로, **하드웨어**로 구현해야 한다.
+
+### 4. Time Sharing Systems 
+
+* 탄생배경
+: 과거와 다르게 복잡해지는 OS의 역할에 **Humman OS**가 불가능해졌고, **하드웨어**는 상대적으로 저렴해지며 **인적자원**은 상대적으로 비싸져 장치의 효율보다는 **반응속도**의 중요도가 올라갔다 (인간의 생산성 증가)
+
+* 작동원리 : 모든 작업에 터미널을 제공하고, 정해진 시간동안 하나의 작업이 이루어지도록 한후, **Process Switch**하여 프로세서를 회수하고 **Ready Queue**에 있는 다음 작업을 실행시키는것.
+  * **Preemption(선점)** : 작업이 실행되고 있는 도중에, 다른작업이 우선적으로 CPU를 차지하는것.
+
+![](/assets/img/blog/OS/time sharing.jpg)
+
+`ex) CTSS (1962), MULTICS (1965), UNIX (1970)`
+
+* Time slice and Preemption의 예시
+
+![](/assets/img/blog/OS/time slice.PNG)
+
+  * Time slice 마다 **preemption**이 일어나므로 모든 프로세스의 **Response time**(작업이 시작할때까지 걸리는 시간)은 감소하지만, **Turnaround Time**(작업이 시작되고 완전히 종료될때까지 걸리는 시간)은 언제나 감소하지는 않는다.
+
+### 새로운 개념의 등장
+
+* MultiProgramming 과 Time Sharing의 여러 조건들로 인해 OS에 새로운 개념들이 등장하기 시작했다.
+
+>  1. 프로세스
+>  2. 스케쥴링(Scheduling)과 자원관리
+>  3. Synchronization
+>  4. Memory management
+>  5. Resource Protection (=I/O protection)
+
+* **Process**
+: 현재 실행중인 프로그램. **실행가능한 프로그램, 프로그램에 필요한 DATA, 실행에 필요한 자원등의 정보**의 3가지 요소로 구성되어있다.
+
+세부내용은 다음장에서 다룬다.
+
+* **Scheduling and Resource Management** 
+  * short-term Scheduler
+  : OS가 **ready Queue**의 크기를 정하고, 메인메모리에 올라와 있는 **프로세스**들이 해당 큐에 대기하면, 특정 기준에 따라 **다음에 실행될 프로세스**를 정하는 시스템
+  * 모든 자원 할당과 스케쥴링은 몇가지 요소를 고려한다.
+    1. 공정성(Fairness) : 모든 프로세스가 공평하게 자원에 접근할 수 있는것.
+    2. 효울성(Efficiency) : **Throuput**을 최대화, **Response Time**을 최소화
+    3. 우선권 (Differential responsiveness) : 요구사항에 따라 작업들을 분류하는것.
+    * 공정성과 효율성의 trade off 가 발생한다.
+
+* **Synchronization**
+  * 프로그램들이 메모리를 같이 사용할때 발생하는 문제, 혹은 서로가 자원을 놓기를 기다리는 **교착상태(Deadlock)** 등에 관한 해결법
+
+* **Memory Management**
+  * **Virtual Memory** 
+  : 물리적으로(Physically) 메인메모리에 수용가능한 용량을 고려하지 않고, 조금더 논리적인(Logically) 시점에서 메모리 주소를 사용하는 방법.
+  * 분산적재, 부분적재
+    1. 분산적재(Paging system)
+    : 여러조각으로 나눠서 메모리 공간을 효율적으로 사용하며 메인메모리에 저장하는 방식
+    2. 부분적재 : 같은 프로그램의 데이터라도, 꼭 필요한 데이터(Pages)만 메인메모리에 올리고, 나머지는 Disk에 남겨두는것.
+  * 앞서다룬 **MMU** 가 **Virtual Memory**의 주소를 실제 Physical 주소로 변환시켜(부분적재로 인해 메모리뿐만이 아니라 Disk주소까지) 데이터에 접근할 수 있도록 한다.
+
+  ![](/assets/img/blog/OS/virtual memory.PNG)
+
+* **Resource Protection** 
+  * 앞서 말했던것처럼 유저레벨에서 해당 프로그램 외의 메모리 접근, I/O 접근을 막기위해서 User모드와 Kernel 모드로 분리하였다. 이때 두 모드를 전환하기 위해서는 **System call** 을 요청해야한다.
+  * **System Call**
+  : 프로세스가 커널모드의 서비스를 이용하기 위해 요청하는 것으로 application이 OS와 상호작용할 수 있도록 해준다. `나 이 자원이 필요해!`
+    * 목적 : 시스템 자원을 보호, 무한루프 등의 버그유발 유저 프로그램의 차단, 무단으로 다른 자원에 접근하는 프로그램 차단
+    * 직접 프로세스를 통해 **System call**을 요청하기는 어렵지만, 지금은 **library**를 통해 쉽게 가능하다. `ex) 라이브러리 함수 printf -> I/O기능 write()`
+
+  * 유저가 커널모드에 진입하기 위해서는
+    1. Interrput 
+    2. Exception
+    3. System call 
+    의 3개중 최소 하나가 필요하다.
