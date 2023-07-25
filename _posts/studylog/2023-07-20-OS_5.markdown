@@ -3,14 +3,139 @@ layout: post
 related_posts:
   - /studylog/OS_4/
   - /studylog/OS_6/
-title:  "오퍼레이팅 시스템 [5] -  "
-date:   2023-07-18 12:00:00 +0900
+title:  "오퍼레이팅 시스템 [5] -  Process 1"
+date:   2023-07-20 12:00:00 +0900
 categories: studylog
 description: >
-  '메모리의 계층구조와 그 구성'
+  '프로세스의 정의와 그 구조'
 ---
 * * *
 * toc
 {:toc}
 
-## 컴퓨터의 메모리
+# Process 란?
+
+* 실행중인 **Program**. 
+* 프로세서에 등록되고 실행될 수 있는 개체
+* Instruction들의 실행, 현재 상태, 사용하는 시스템 자원 등으로 특정되는 하나의 **작업 단위**
+* OS의 시점에서 **Job, Task, Process**는 비슷한 용도로 사용된다.
+  * 물론 디테일하게 들어가면 완전히 같은 뜻은 아니다.
+
+`ex) Mark Kernel 은 프로세스를 자원단위로 나눈 Task, 실행단위로 나눈 Thread로 구분했다.`
+
+## Program 과 Process
+
+* **Program**은 디스크에 저장되어있는 **수동적인** 개체이고,
+* **Process**는 실행되는 **능동적** 개체이다.
+  * 즉, Program의 실행관련 파일들이 Main Memory의 Stack, Heap 에 Load 되면 Process가 된다.
+* Process의 2개의 필수요소
+  1. 코드
+  2. 코드에 필요한 Data의 집합
+* 프로그램에 따른 메모리 Layout
+
+![](/assets/img/blog/OS/memory layout.PNG)
+
+~~~cpp
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX 3
+int x;
+int y = 10;
+int read(int num){
+  int sum = 0;
+  ...
+  return sum
+}
+int cout(){
+  int cnt;
+  ...
+  return cnt;
+}
+int main(int argc, char* argv[]){
+  int *values;
+  values = (int *)malloc(sizeof(int)*5);
+  x = count();
+  ...
+  return 0;
+}
+~~~
+
+위와 같은 코드가 있을경우, 전역변수인 `x, y`는 각각 **uninitialized data, initialized data**에 저장, 지역변수인 `sum, cnt, values` 는 **Stack**에, `malloc`을 이용해 동적할당한 데이터는 **Heap**에 저장된다.
+
+## Stack
+
+* **Last-In-Fist-Out(LIFO)**의 리스트로, 실행중인 프로세스의 실행 순서정보(Excution Sequence)와 임시 데이터(Temporal Data)를 저장하는 역할을 한다.
+
+### Excution Sequence
+
+* **Process**가 **Call**을 실행해 다른 주소의 instruction을 실행할 경우, 다시 돌아올 수 있게 **return address**, 이어질 procedure에게 전달할 **Parameters**를 순서대로  **Stack**에 저장해둔다. 
+* 이로인해 이루어지는 실행과정이 Excution Sequence 이다.
+
+### Stack의 구성요소
+
+* **Stack Pointer** 
+: 현재 스택의 Top의 주소를 저장한다.
+* **Stack Base**
+: 스택의 시작주소를 저장한다.
+* **Stack Limit**
+: 스택이 최대로 저장할수 있는 한계의 주소를 저장한다.
+
+* 위의 그림처럼 Stack은 메모리에서 높은 주소에서 낮은 주소로 내려오며 저장된다. 즉, **Stack base**가 가장 큰 주소값을 갖는다.
+
+## PCB
+
+* **Process Control Block(PCB)** 
+: OS에서 가장 중요한 데이터 구조이며, **프로세스의 대한 모든정보**를 저장하는 구조체이다.
+
+* 프로세서가 실행되는 도중, **Interrupt**가 들어오는 경우, 프로세서의 당시의 레지스터와 중간 DATA를 **PCB**에 저장해 둘 수 있다.
+* 후에 다룰 **Multiprocessing**시스템에서 OS가 다수의 프로세스를 실행 가능하도록 한다.
+
+### PCB의 구조
+
+1. **Process Identification** 
+: 프로세스의 주민번호같은 역할.
+2. **Process State Information**
+: 가장 중요한 정보로, PCB의 주목표라고 할 수 있다. `PC, PSW` 레지스터 등의 프로세스의 현재 상태가 저장된다.
+3. **Process Control Information**
+: 프로세스를 실행, 스케쥴링함에 있어 필요한 정보를 저장한다.
+
+* OS가 프로세스 실행시 가장 처음으로 **PCB**를 만든다.
+* 프로세스를 실행시 계속해서 read, modify 되며, **Scheduling**을 위한 Queue가 여러 프로세스의 **PCB**가 연결되어있는 구조이다. 
+
+## Process Switch
+
+* 프로세스가 바뀌는 과정으로 **Timer Interrupt(time-out), System call(I/O request), Exception**에 의해 발생한다.
+* **Process Switch**는 언제나 **Mode Switch**를 유발한다.
+  * 유저 레벨에서는 다음 실행될 프로세스를 고르는 **Scheduler** 코드(Dispatcher Code)를 실행하지 못하므로 커널모드로 진입후 다음 실행될 프로세스를 고르고, **Process Switch**후 다시 유저모드로 **Mode Switch**한다.
+  * Process Switch는 무조건 Mode Switch를 유발하지만, Mode Switch는 언제나 Process Switch를 발생시키는것은 아니다.
+
+## Process States
+
+1. **Two-State Process Model**
+
+![](/assets/img/blog/OS/two state process.png)
+
+  * Process를 실행중, 실행중이 아님 2단계로 나누어 관리한다.
+  * 문제점 : 실행중이 아닌 프로세스 Queue에서 다음 실행될 프로세스를 DisPatch 했을때, 아직 **I/O 단계가 끝나지 않아** 실행 준비가 되어있지 않을 수 있다.(Fire State)
+  * 프로세스의 추가적인 State가 필요해짐.
+
+
+2. **Five-State Process Model**
+
+![](/assets/img/blog/OS/five state process.png)
+
+  * **Two-State process model**의 **Not Running**단계를 **Ready, Blocked**의 두단계로 세분화 하였다.
+  >* New : PCB가 아직 완성 안된 임시 State
+  >* Ready : 바로 실행될수 있는 상태
+  >* Blocked : 아직 I/O작업이 완료되지 않은 실행불가능한 상태
+  >* Running : 실행중
+  >* Exit : 실행완료
+
+  * **Multiple Blocked Queue** 
+  : **Blocked Queue**를 여러개 만들어 특정 이벤트를 기다리는 프로세스들끼리 구분하여 Blocked 시킬수 있다.
+
+  * **Suspended Process** : 프로세스가 실행되지 않았을때(Ready/Blocked), 메모리가 아닌 **Disk**에 저장되어있는 상태를 추가함으로서 **Seven State Process Model** 또한 구현 가능하다.
+
+* * *
+>교재 외 참고문헌 
+>* https://www.scaler.com/topics/c/memory-layout-in-c/

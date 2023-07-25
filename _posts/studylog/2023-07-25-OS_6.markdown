@@ -1,0 +1,15 @@
+---
+layout: post
+related_posts:
+  - /studylog/OS_5/
+  - /studylog/OS_7/
+title:  "오퍼레이팅 시스템 [6] -  Process 2"
+date:   2023-07-25 10:00:00 +0900
+categories: studylog
+description: >
+  '프로세스의 정의와 그 구조'
+---
+* * *
+* toc
+{:toc}
+
