@@ -2,7 +2,7 @@
 layout: post
 related_posts:
   - /studylog/OS_1/
-title:  "오퍼레이팅 시스템 [0] - preview"
+title:  "오퍼레이팅 시스템 [0] - OS preview"
 date:   2023-07-08 08:46:00 +0900
 categories: studylog
 description: >
@@ -44,7 +44,7 @@ OS의 목적과 그 진화 과정에 대해 학습합니다.
 {:.note title="Chapter 3"}
 프로세스의 정의와 작동방식에 대해 학습합니다.
 
-#### Uniprocessor Scheduling
+#### [Uniprocessor Scheduling](/studylog/OS_7/)
 {:.note title="Chapter 9"}
 유니프로세서 환경에서 다양한 스케쥴링 방식을 다룹니다.
 

@@ -15,6 +15,8 @@ description: >
 
 ## INTERRUPT
 
+* **인터럽트**란 말그대로 현재 하는 일을 멈추게 하는 "방해"라고 보면된다.
+
 OS에게 현재 실행중인 **Process**를 중지시키고, **Interrupt**를 해결하기위해 **Interrupt Handler**를 실행시키도록 하는 Event.
 
 I/O 장치에게 신호가 들어왔을때, 계속해서 **polling (대기)** 하지않고, CPU에 신호를 보내 먼저 처리할 수 있도록 한다. `ex) system timer interrupt `

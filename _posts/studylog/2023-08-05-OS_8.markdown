@@ -1,0 +1,40 @@
+---
+layout: post
+related_posts:
+  - /studylog/OS_7/
+  - /studylog/OS_9/
+title:  "오퍼레이팅 시스템 [8] - Scheduling 2 "
+date:   2023-08-03 11:00:00 +0900
+categories: studylog
+description: >
+  '멀티프로세서와 Real-Time, Linux의 스케줄링의 방법들'
+---
+* * *
+* toc
+{:toc}
+
+# Multiprocessor Scheduling
+
+## 멀티프로세서에서의 Scheduling
+
+## 단일큐 Scheduling
+
+## 다중큐 Scheduling
+
+## Load Balancing
+
+# Real-Time Scheduling
+
+## Prioriy Based Scheduling
+
+## EDF
+
+## RMS
+
+# Linux Scheduling
+
+## O(1) Scheduling
+
+## Proportional Share Schedulig
+
+## CFS
