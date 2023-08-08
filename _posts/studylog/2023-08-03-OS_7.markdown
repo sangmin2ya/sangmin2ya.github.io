@@ -220,4 +220,4 @@ Time slice가 3sec인 Round Robin Scheduling 알고리즘
 
 
 *[Turnaround]: 프로세스 종료시간 - 프로세스 도착(시작)시간  
-*[Starvation]: 스케줄링에 의해 특정 프로세스의 실행순서가 계속해서 뒤로 미뤄지는 경우.
+*[Starvation]: 스케줄링에 의해 우선순위가 낮은 프로세스의 실행순서가 계속해서 뒤로 미뤄지는 경우.

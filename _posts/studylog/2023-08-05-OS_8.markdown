@@ -14,27 +14,227 @@ description: >
 {:toc}
 
 # Multiprocessor Scheduling
+* 멀티 프로세서의 분류
+  1. Loosely coupled or distributed multiprocessor, or cluster
+  : 각 프로세서들은 자신만의 메인메모리와 I/O 채널을 보유하고있다.
+  2. Functionally specialized processors
+  : 각 프로세서들이 다른 목적을 갖고있으며 해당 프로세서들을 통제하는 Master processor가 존재한다. `ex) I/O processor, Floating poing processor`
+  3. <ins>**Tightly coupled multiprocessor**</ins>
+  : 프로세서들이 메모리영역을 공유하며, 운영체제의 통합 통제를 받는다. 이번에는 해당 멀티프로세서 시스템에서의 스케줄링을 다룬다.
+
+* 멀티 프로세서 Scheduling
+  1. Asymmetric Multiprocessing (master/slave)
+    * 하나의 **Master 프로세서**가 스케줄링을 담당하고, 나머지 프로세서는 유저 프로그램을 실행한다.
+    * 하나의 Master 프로세서만 시스템 데이터에 접근하므로 구현이 간단하지만, 그만큼 확장성이 떨이진다.
+  2. <ins>Symmetric Multiprocessing (SMP, peer)</ins>
+    * 어떤 프로세서든 커널모드로 진입가능하다.
+    * 각 프로세서들은 동등한 관계를 갖으며 스스로 Self-Scheduling을 통해 프로세스를 실행한다.
 
 ## 멀티프로세서에서의 Scheduling
 
+* **Uniprocessor Scheduling**에서는 어떤 작업을 다음에 실행할지만 결정했던 것과는 다르게 **Multiprocessor Scheduling**에서는 이뿐만이 아니라 어떤 프로세서에서 작업을 실행할지도 고려해야한다.
+  * Ready Queue를 어떻게 관리할지 (하나의 큐 or 프로세서별 큐)
+  * 프로세스의 Dispatch 관리
+
+* Uni-processor 일때 보다 dual-processor 일때 Scheduling의 효율이 떨어지는 모습을 보이므로 상대적으로 Scheduling 방법의 중요도가 떨어진다.
+
 ## 단일큐 Scheduling
+
+* **Global Ready Queue**가 존재하여 모든 프로세서가 Idle 상태일때, 해당 Queue에서 프로세스를 Dispatch한다.
+* 프로세스들은 특정 프로세서에 할당되지 않고 랜덤으로 배정된다.
+* 장점 : 간단하다. **Load sharing**이다.
+  * Load Sharing : 큐를 공유함으로서 공평하게 작업이 할당되어, 특정 프로세서에만 작업이 몰리는 Load Imbalance문제가 발생하지 않는다.
+* 단점 
+  * 어떤 프로세스가 어떤 프로세서에 할당될지 정할 수 없으므로 매번 다른 프로세스를 실행하게된다. - **Affinity 문제**
+  * 동시에 Ready Queue에 접근하여 발생하는 **Race Condition**을 막기위해 동기화(Synchronization)작업이 필요하다 - 확장성의 문제
+
+![](/assets/img/blog/OS/SMP.PNG)
+Affinity가 없는 단일큐 Scheduling
+{:.figure}
+
+
+* Processor Affinity(친화력)
+  * 단순한 단일큐 Scheduling에서는 프로세스가 랜덤 프로세서에서 실행되므로, Cache가 오염되어 Miss rate가 증가하게된다. 
+  * 같은 프로세스가 특정 프로세서에서만 실행되게 한다면, 캐시메모리의 데이터를 사용가능하여 **(Warm cache)** 효율적인 메모리접근이 가능하다.
+  * 대부분의 **SMP(Symmetric Multi-Processing)**를 지원하는 OS는 **Warm Cache**를 활용하기 위하여 같은 프로세서에서 반복실행하도록 설계되어있다. - 프로세스가 특정 프로세서에 **Affiniy**를 갖고있다.
+  1. Soft affinity : 상황에따라 다른 프로세서에서 실행되는 예외 존재
+  2. Hard affinity : 예외 없음
+  * 대부분의 경우에 affinity모두 지원하며, MP scheduling의 필수적인 요소이다.
+
+![](/assets/img/blog/OS/affinity.PNG)
+Affinity가 보장된 단일큐 Scheduling
+{:.figure}
+
 
 ## 다중큐 Scheduling
 
+* 각 프로세서들이 자신만의 **고유 Private Queue**를 소유하고있다.
+  * 작업이 시스템에 들어오면, 오직 하나의 Ready queue에만 위치된다.
+  * 각 Queue에는 프로세서에 맞는 Scheduling 방법이 적용된다.
+* 고유 Queue를 사용함으로서 **동기화문제 해결과 확장성, Affinity 보장**
+
+![](/assets/img/blog/OS/multi queue.PNG)
+자신의 고유 Queue를 갖고있는 CPU
+{:.figure}
+
+* 단점 : Load Balancing이 필요하다.
+
 ## Load Balancing
+
+* 특정 프로세서에만 Short Process가 몰리거나, 프로세스 자체가 특정 Queue에만 집중되는 등 프로세서 작업량의 불균형이 발생되는 경우
+
+![](/assets/img/blog/OS/load imbalance.PNG)
+Load Imbalance로 비효율적인 상태인 MP system
+{:.figure}
+
+* **SMP 시스템**에서는 다중 프로세서를 활용하는 이점을 최대화 하기위해서, 프로세서들의 **Workload balance**를 맞추는것이 중요하다.
+* 해결법
+  1. Pull Migration : IDLE한 Processor가 다른곳에서 Process를 가져오는 방식
+  2. Push Migration : 특정 작업이 각 Processor들의 Load 상태를 확인하여 적은쪽으로 Process를 보내는 방식
+  * 결국 다른 Queue의 상태정보를 파악하고, 프로세스를 옮기는데 **Overhead**가 발생한다.
+
+## HMP
+
+* Heterogeneous Multiprocessing(이질성 멀티프로세싱)
+  * 각 프로세서들이 클럭속도와 전력관리 방법이 다르다
+  * **Asymmetric MP**와는 다른개념이다.
+
+* 전력소모를 높여 성능을 중시한 **Big core**와, 에너지 효율을 키운 **Little core**로 이루어져있다.
+  * 프로세스들의 특징에 맞춰 적절히 분배하는것이 중요
 
 # Real-Time Scheduling
 
+* 실시간 스케줄링
+  * 시스템이 작동되는 도중 실시간으로 이벤트가 일어나는 경우, 시스템은 **가능한한 빨리 반응하고 처리**해야한다.
+  * **Event Latency** = Interrupt Latency + Dispatch Latency 라는 개념을 사용하여 이를 최소화 하는것을 우선한다.
+
+ * 스케줄링 방식
+  * **적절하지않은 방식**
+    1. Round-Robin preemptive Scheduler : 현재 프로세스의 Time-Slice 가 종료될때까지 기다려야한다.
+    2. Priority-Driven non-Preemptive Scheduler : 비선점방식이라 현재 프로세스가 종료될때까지 기다려야한다.
+  * **적절한 방식**
+    1. Priority-Driven Preemptive Scheduler : 선점방식이라 다음 선점시기에 **Real-time event**시작가능
+    2. Immediate Preemptive Scheduler : 그냥 즉시 **Real-time event**시작
+
+1. Soft Real-Time systems(연성)
+  * 무조건적으로 **Real-time Process**를 먼저 실행한다고 보장하지 않는다.
+  * Deadline이 없는 작업일때 사용한다.
+2. Hard Real-Time systems(경성)
+  * 무조건 주어진 Deadline 안에 종료해야 하므로 **Event Latency**를 최소화하는데 집중한다.
+  * Deadline을 어길시 시스템에 치명적인 오류가 발생할 수 있다.
+
+* RealTime Task
+  1. Periodic Task : **주기적**으로 발생하는 작업
+  2. Aperiodic Task : **비주기적**으로 발생하는 작업
+  * Starting Deadline : 언제까지 시작해야한다.
+  * Complete Deadline : 언제까지 완료되어야 한다.
+  * 두개중 하나의 Deadline은 갖지만, 두개다 갖는경우는 없다.
+
 ## Prioriy Based Scheduling
+
+* Real-Time 시스템에서 가장 중요한 부분은 **Real-Time Process**를 가능한한 빠르게 처리하는 것이다.
+* 다중 Ready Queue에 우선순위를 부여해 높은 우선순위의 Queue부터 처리하도록 한다.
+  * soft Real-Time 시스템이다
+  * **Starvation**문제가 발생한다.
 
 ## EDF
 
+**Earliest Deadline First**
+* **Real-Time process**의 Deadline을 파악하여 시스템에게 알려준다
+* 시스템은 그 즉시 Deadline을 파악하여 해당 Process에 우선순위를 매긴다.
+
+* Deadline을 고려하지 않는 Priority Based Scheduling의 경우에는 동시에 처리해야할 **Real-Time process**가 있는경우 그 우선순위를 임의로 판단하여 처리할 수 밖에 없지만(Miss 발생가능) **EDF**는 새로 도착하는 이벤트의 Deadline을 파악하여 그 우선순위를 설정한다.
+
+![](/assets/img/blog/OS/EDF.PNG)
+Complete Deadline을 고려하여 Miss를 없앤 EDF의 예시
+{:.figure}
+
 ## RMS
+
+**Rate Monotonic Scheduling**
+* **Perioic Real-Time Task**를 Scheduling할때 **주기가 짧을수록 높은 우선순위를**, **주기가 길수록 낮은 우선순위**를 할당하는것.
+
+* **RMS**의 좋은점은, 부등식 하나로 해당 시스템이 들어오는 **Real-time periodic task**에 대해 Deadline을 만족하는지 확인할 수 있다는 점이다.
+
+$$\frac{C_1}{T_1} + \frac{C_2}{T_2} + \cdots + \frac{C_n}{T_n} <= n(2^{\frac{1}{n}}-1)$$
+
+*C : Execution Time / T = Period
+{:.figure}
 
 # Linux Scheduling
 
+초기의 리눅스는 앞서다룬것과 같이 단일큐 Scheduler를 통해 다음 실행할 프로세스를 결정하였다. 이후 확장성의 한계로 다중큐 Scheduler를 채택하였고, **O(1) Scheduling**, **Proportional Share Scheduling(CFS)** 순으로 발전해왔다. 현재는 CFS를 사용중이다.
+
 ## O(1) Scheduling
+
+* Priority-based scheduler
+* 우선순위가 정해진 140개의 Run Queue(0 ~  139)가 존재하며, 각 Queue들은 Linked List로 구현한다.
+* Bitmap을 통해 각 Run Queue에 실행할 Task의 유무를 파악할 수 있다. 
+* 해당 Queue의 Task들은 지정된 **Time Slice**만큼 실행되고 다음 Task로 넘어가며, 완료된 Task는 **Active Run Queue**에서 **Expired Run Queue**로 이동된다.
+* **Active Queue**의 모든 작업이 실행되어 텅 빈상태가 되면, **Active Queue**와 **Expired Queue**를 **교체**하여 다시 실행한다.
+
+![](/assets/img/blog/OS/O(1).png)
+O(1) 스케줄러의 작동 방식
+{:.figure}
+
+* 한계점 
+: 정확한 수행시간의 파악이 불가능하고, Task가 Queue에 들어간 이상 정해지는 우선순위로 확장성이 떨어지는 문제점이 발생한다. 이로인해 **Proprotional Share Scheduling**이 등장했다.
 
 ## Proportional Share Schedulig
 
+* 프로세스의 우선순위 뿐만이 아니라 **Weight**도 고려하여 CPU의 수행시간을 보장하는 방식.
+  * 실행되어야 할 프로세스의 weight이 크다면, CPU를 더 많이 할당해주는 시스템
+
+![](/assets/img/blog/OS/PSS.PNG)
+Task의 크기에 따라 CPU를 각각 2/3, 1/3씩 할당받은 모습
+{:.figure}
+
+* Linux에서 현재 사용되는 **CFS**또한 해당 방식을 사용한다.
+
+* 최적화
+  * 프로세스의 Weight에 따라 얼마나 공정하게 CPU자원을 배분하느냐가 기준
+  * **Service Time Error**와 **Scheduling Overhead**로 공정성의 정확도를 판단한다.
+    * Service Time Error : 특정 Task의 실제 service time - 예정된 service time
+    * Scheduling overhead : Scheduling 단계에서 걸리는 시간
+    
+### WFQ
+
+**Weighted fair queueing**
+* 오차값의 범위가 보장된 알고리즘
+
+* **Virtual Time**
+: 프로세스의 t시간까지의 누적수행시간을 해당 프로세스의 Weight로 나눈것
+* **Virtual Finish Time**
+: 현재상태에서 단위시간만큼 해당 프로세스를 실행했을때의 예상 누적시간
+* **VFT**가 낮은것부터 실행해 나간다.
+
+>virtual time : $$ VT_i(t) = \frac{w_i(t)}{ϕ_i} $$
+>
+>virtual finish time : $$VFT_i(t) = \frac{w_i(t)+1}{ϕ_i}$$
+>
+>$$ϕ_i =$$ 프로세스의 Weight
+
+* 보장된 오차
+```
+-0.9 ≤ e ≤ 1.2
+```
+
+![](/assets/img/blog/OS/WFQ.PNG)
+
 ## CFS
+
+**Completely Fair Scheduler**
+* 리눅스 커널의 2.6.23 버전부터 사용되는 스케줄링방식
+* 각 코어가 각각의 Queue를 갖는 다중 Ready Queue방식이다.
+* 앞서 다룬 **WFQ**와 작동방식이 비슷하다.
+  * **Virtual runtime**이 적은 task부터 실행한다.
+  * 리눅스에서는 **Red-Black Tree** 알고리즘을 사용하여 **Virtual runtime**이 낮은 "트리의 가장 왼쪽에 있는 노드"의 Task를 먼저 실행한다.
+  * 어떤 task도 변화하는 Virtual runtime의 값에 따라 트리의 가장 왼쪽에 올 수 있다.
+
+# 추가참고자료
+
+> [한양대학교 Embedded Software System Lab](https://slidetodoc.com/10-multiprocessor-scheduling-advanced-operating-system-three-easy/)
+
+*[Starvation]: 스케줄링에 의해 우선순위가 낮은 프로세스의 실행순서가 계속해서 뒤로 미뤄지는 경우.
+
+*[Bitmap]: O(1)스케줄러에서 해당 Queue에 task가 있는지 없는지 파악하기 위한 Flag를 저장해둔 자료구조. (0 / 1)
