@@ -3,8 +3,8 @@ layout: post
 related_posts:
   - /studylog/OS_8/
   - /studylog/OS_10/
-title:  "오퍼레이팅 시스템 [8] - Thread와 동기화 "
-date:   2023-08-08 11:00:00 +0900
+title:  "오퍼레이팅 시스템 [9] - Thread와 동기화 "
+date:   2023-08-10 11:00:00 +0900
 categories: studylog
 description: >
   'Thread 개념의 등장과 이에따른 동기화의 필요성'
@@ -15,20 +15,128 @@ description: >
 
 # Process 와 Thread
 
-# Multithreading
+* **Process** : 실행중인 프로그램
+  * 자원소유의 단위
+  * Scheduling(실행) 단위
+
+우리는 지금까지 Process가 하나의 실행 sequence만 있다고 가정해왔다.  
+* Example) **Busy Web server**에서 Multithread가 등장한 배경
+>
+>**Traditional Single-Threaded Process** : 한번에 한명의 고객만 담당가능
+>
+>-> **Multi-processing solution** : 고객이 많아져 프로세스가 많아지자 생성, context-switching, 프로세스간 통신에 드는 Overhead 증가
+>
+>-> **Multi-Threading solution** : Overhead가 적은 Multithread 등장
+
+## Multithreading
+
+* 모든 현대 OS는 하나의 Process에 다중의 **Thread**를 제공한다. 
+: 단일 프로세스 내부에서도 **실행단위**로 **Thread(lightweight Process)**로 나뉜다.
+* **Concurrent(동시성, 병행성)**한 다중의 실행단위로 나뉘는 것.
+
+![](/assets/img/blog/OS/multi thread.jpg)
+Single Thread와 Multi Thread
+{:.figure}
+
+* 이때 같은 Process이므로 Thread는 같은 **Code, Data, Files** 등 자원을 공유한다. 하지만 같이 실행되지는 않는다.
+
+***
+
+### **Concurrency**
+  * Multithreaded Process는 Overhead가 더 발생하는 다중 Process의 실행없이도 **Concurrency(동시성)**를 가능하게했다.
+  1. **Interleaving**기법
+  : 하나의 **CORE**로 여러 **Thread**를 번갈아가며 실행하여 병렬적으로 처리되는것과 같은 효과를 내는것. **Concurrent**하지만 **Parallel**하지는 않다.
+  2. **Overlapping**기법
+  : 여러개의 **CORE**로 동시에 여러 **Thread**를 병렬처리한다. **Conccurent, Parallel**하다.
+
+![](/assets/img/blog/OS/multithread ex.PNG)
+Uniprocessor에서의 Multithreading 예시
+{:.figure}
+
+* 위 예시에서 `Thread A`의 Time quantum이 종료된후에 `Thread B,C`가 모두 준비된상태임에도 `Thread C`가 실행된것은 **Scheduling**방법에 따른것이다.
+
+* **Multithreading**의 장점
+  1. 새로운 프로세스를 만드는것이 아니므로 새로운 **PCB**전체를 만들 필요가 없다.
+  2. 프로세스보다 Thread간 Switch가 더 빠르다.
+  3. Thread간 자원을 공유한다.
+    * 프로세스간 상호작용은 자원 보호를 위해 **Kernel**영역에서 이루어져야하는 반면, Thread는 같은 메모리를 사용하므로 **User**레벨에서 가능하다.
+    * **Cache**의 오염이 덜하다.
+  4. Single-Core 보다 Multi-Core에서 더 큰 장점을 갖는다.
+    * 하나의 프로세스가 여러 Thread로 이루어져 있으므로, **하나의 프로세스가 다중 CPU에서 실행**될 수 있다.
+
+### Multicore 환경에서의 Multithreading
+  * 많은 시스템에서 사용되는 Multicore, Multithread 시스템은 무조건적으로 Thread가 많다고 성능이 좋아지진않는다.
+  * 아래는 행렬곱셈과 Fast Fourier transform 를 처리할때 Thread개수에 따른 성능을 계산한 그래프이다.
+
+![](/assets/img/blog/OS/Thread speedup.PNG)
+16 processor 환경에서의 thread 개수에 따른 성능
+{:.figure}
+
+> * 2개의 프로세스(행렬곱, FFT)가 실행되고 있으므로 프로세스당 8개의 Thread로 나뉘어져 총 8*2=16개의 Thread가 모든 프로세서를 활용하고 있을때 가장 효율이 높다.
+>
+>*  그 이상은 Overhead(switch, rescheduling, preemption, cache오염 등)으로 인해 효율이 떨어진다.
 
 ## Multithread Model
 
+* Thread들은 같은 자원을 공유하지만, Memory상에 **Execution Stack**을 각자 갖고있다. (User, Kernel stack)
+
+![](/assets/img/blog/OS/thread model.PNG)
+
+* **TCB(Thread Control Block)**
+: 각 Thread가 갖고있는 레지스터값, Scheduling 정보 현재 State등을 저장하는 역할로 PCB와 비슷하다.
+
+* 새로운 Proecss를 생성할때는(`fork()`) PCB부터 DATA, Stack, CODE등 모든 메모리영역을 할당해 줘야하지만, 새로운 Thread를 생성할때는(`pthread_create()`) Stack과 TCB만 만들어주면 된다. **비용감소!**
+
+
+***
+
+* Thread는 2가지의 카테고리로 나눌수 있다.
+
+![](/assets/img/blog/OS/ULT KLT.PNG)
+ULT와 KLT
+{:.figure}
+
 ### ULTs
+
+**User Level Thread**
+
+* 모든 Thread 관리가 유저 프로그램 즉, Application에서 이루어진다.
+  * User Space에 존재하는 **Thread library**에 의해 Thread가 만들어진다.
+  * **Thread library**에는 Thread 생성, 삭제와 Thread간 소통과 Data공유 등의 코드가 들어있다.
+
+* Thread Switch가 User Space에서 이루어진다
+  * **Thread Library**에 의해 Schedule, TCB저장, 불러오기가 이루어진다.
+  * **Kernel**은 개입하지않는다!
+
+* **장점**
+  1. **Mode Switch**없이 **Thread Switch**가 가능하다.
+  2. 어떤 OS에서도 적용가능하다.
+
+* **단점**
+  1. **MultiCore 확장성**이 없다. : OS는 하나의 프로세스로만 생각하므로 Thread를 코어에 각각 부여하지 못한다.
+  2. **병렬처리**가 불가능하다. : 커널이 하나의 Thread만 Schedule 가능하므로
+  3. 하나의 Thread만 **Block(System call)**되면, 전체 Thread가 Block된다.
 
 ### KLTs
 
-# Thread API
+**Kernel Level Thread**
 
-## Posix Thread Interface
+* 모든 Thread관리가 **Kernel 영역**에서 이루어진다.
+* 유저프로그램에서는 어떤 Thread 관리도 불가능함
+
+* 장점
+  1. 코어당 하나의 Thread를 할당할 수 있어 **Parallel**하게 실행가능하다.
+  2. 하나의 Thread가 **Block**되어도 다른 Thread는 실행가능하다.
+* 단점
+  1. **Thread Switch**를 위해서는 **Mode Switch**가 필수적이다. -> **Overhead**증가
+
+* **Combined ULT/KLT**
+  * 두 모드를 같이 사용하여 각각의 문제점을 보완한다.
+  * 하지만 구현 복잡도가 매우 증가한다.
 
 # Thread 동기화
 
-## Race condition
+* Thread의 자원을 공유하는 특성으로 인해 같은 자원에 동시에 접근하게 되는 **Race Condition**등의 문제가 발생한다.
+* **Synchoronization(동기화)** : 다수의 Thread가 공유자원사용 혹은 실행될때 잘못된 결과가 나오지않게 조정하는 것.
 
-## 동기화
+*[PCB]: Process Control Block : 프로세스에 대한 모든 정보가 담겨있으며, 프로세스가 시작될때 OS에의해 만들어져 메인메모리에 저장된다.
