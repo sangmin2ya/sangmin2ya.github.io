@@ -7,13 +7,17 @@ sidebar: true
 ## Hello, World!
 
 Hi, I'm **SANGMIN PARK**!<br>
-I'm currently working at **[SAP Labs Korea]**, and am cse student of **[INHA University]**.<br>
-I like to solve brain teasing problems in field of CSE (probably the reason I liked multi-core programming / OS courses).<br>
-And I'm also a [heavy gamer]!<br>
-Pleaseh check my [resume] if you wish to know more about me.
+I am cse student of **[INHA University]**.<br>
+I like to solve brain teasing problems in field of CSE.<br>
+I'm also a **[HEAVY!! gamer]**! The reason why I decided to study **[GAME DEVELOPMENT]**!<br> 
+And love to **[draw](https://blog.naver.com/netboy0524)** some stuff. **:D**<br><br>
+
+This Blog is for my Study and Game Develop records.<br>
+
+## THANK YOU! 
 
 
 
 <br><br><br>
-## 박상민
+## 박상민 / SANG MIN PARK
 <!--author-->
