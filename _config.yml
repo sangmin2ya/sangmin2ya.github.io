@@ -52,8 +52,16 @@ menu:
     url:               /about/
   - title:             STUDY LOG
     url:               /studylog/
+    submenu: 
+      - title:         OS
+        url:           /os/
+      - title:         NETWORK
+        url:           /network/
   - title:             GAME DEVELOG
     url:               /gamedevelog/
+    submenu:
+      - title:         UNREAL ENGINE
+        url:           /unrealengine/
   - title:             GAME ANALYSIS
     url:               /gameanalysis/
   - title:              BAEKJOON

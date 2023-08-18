@@ -1,11 +1,13 @@
 ---
 layout: post
 related_posts:
-  - /studylog/OS_7/
-  - /studylog/OS_9/
+  - /os/OS_7/
+  - /os/OS_9/
 title:  "오퍼레이팅 시스템 [8] - Scheduling이란?(2) "
 date:   2023-08-03 11:00:00 +0900
-categories: studylog
+categories: 
+  - studylog
+  - os
 description: >
   '멀티프로세서와 Real-Time, Linux의 스케줄링의 방법들'
 ---

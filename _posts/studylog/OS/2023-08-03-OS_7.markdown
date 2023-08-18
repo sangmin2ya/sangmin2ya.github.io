@@ -1,11 +1,13 @@
 ---
 layout: post
 related_posts:
-  - /studylog/OS_6/
-  - /studylog/OS_8/
+  - /os/OS_6/
+  - /os/OS_8/
 title:  "오퍼레이팅 시스템 [7] - Scheduling이란?(1) "
 date:   2023-08-03 10:00:00 +0900
-categories: studylog
+categories: 
+  - studylog
+  - os
 description: >
   '유니프로세서의 스케줄링의 방법들'
 ---

@@ -1,11 +1,13 @@
 ---
 layout: post
 related_posts:
-  - /studylog/OS_1/
-  - /studylog/OS_3/
+  - /os/OS_1/
+  - /os/OS_3/
 title:  "오퍼레이팅 시스템 [2] - Interrupt 란?"
 date:   2023-07-14 08:46:00 +0900
-categories: studylog
+categories: 
+  - studylog
+  - os
 description: >
   'Interrupt 와 Exception에 대한 정의와 작동원리'
 ---

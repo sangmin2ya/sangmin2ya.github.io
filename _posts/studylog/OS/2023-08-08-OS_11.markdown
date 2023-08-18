@@ -1,11 +1,13 @@
 ---
 layout: post
 related_posts:
-  - /studylog/OS_10/
-  - /studylog/OS_12/
+  - /os/OS_10/
+  - /os/OS_12/
 title:  "오퍼레이팅 시스템 [11] - 조건동기화와 Synchronization 예시"
 date:   2023-08-18 11:00:00 +0900
-categories: studylog
+categories: 
+  - studylog
+  - os
 description: >
   '실제 발생하는 Race condition 문제를 해결하는 동기화의 예시'
 image : 

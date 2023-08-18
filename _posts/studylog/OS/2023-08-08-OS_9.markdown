@@ -1,11 +1,13 @@
 ---
 layout: post
 related_posts:
-  - /studylog/OS_8/
-  - /studylog/OS_10/
+  - /os/OS_8/
+  - /os/OS_10/
 title:  "오퍼레이팅 시스템 [9] - Thread와 동기화 "
 date:   2023-08-10 11:00:00 +0900
-categories: studylog
+categories: 
+  - studylog
+  - os
 description: >
   'Thread 개념의 등장과 이에따른 동기화의 필요성'
 ---
