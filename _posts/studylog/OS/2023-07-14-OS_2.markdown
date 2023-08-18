@@ -1,8 +1,8 @@
 ---
 layout: post
 related_posts:
-  - /os/OS_1/
-  - /os/OS_3/
+  - studylog/os/OS_1/
+  - studylog/os/OS_3/
 title:  "오퍼레이팅 시스템 [2] - Interrupt 란?"
 date:   2023-07-14 08:46:00 +0900
 categories: 

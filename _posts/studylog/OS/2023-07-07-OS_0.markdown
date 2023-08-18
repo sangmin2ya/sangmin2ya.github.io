@@ -1,7 +1,7 @@
 ---
 layout: post
 related_posts:
-  - /os/OS_1/
+  - studylog/os/OS_1/
 title:  "오퍼레이팅 시스템 [0] - OS preview"
 date:   2023-07-08 08:46:00 +0900
 categories: 
@@ -34,27 +34,27 @@ description: >
 
 ## Chapter별 학습과정
 
-#### [Computer system overview](/os/OS_1/)
+#### [Computer system overview](/studylog/os/OS_1/)
 {:.note title="Chapter 1"}
 기본적인 컴퓨터 구조에 대해 학습합니다.
 
-#### [Operating System overview](/os/OS_4/)
+#### [Operating System overview](/studylog/os/OS_4/)
 {:.note title="Chapter 2"}
 OS의 목적과 그 진화 과정에 대해 학습합니다.
 
-#### [Process Description and Control](/os/OS_5/)
+#### [Process Description and Control](/studylog/os/OS_5/)
 {:.note title="Chapter 3"}
 프로세스의 정의와 작동방식에 대해 학습합니다.
 
-#### [Uniprocessor Scheduling](/os/OS_7/)
+#### [Uniprocessor Scheduling](/studylog/os/OS_7/)
 {:.note title="Chapter 9"}
 유니프로세서 환경에서 다양한 스케쥴링 방식을 다룹니다.
 
-#### [Multiprocessor, Multicore, and Real-Time Scheduling](/os/OS_8)
+#### [Multiprocessor, Multicore, and Real-Time Scheduling](/studylog/os/OS_8)
 {:.note title="Chapter 10"}
 실제로 자주 사용되는 멀티프로세서, 멀티코어, 리얼타임에서의 스케쥴링 방식을 다룹니다.
 
-#### [Thread](/os/OS_9)
+#### [Thread](/studylog/os/OS_9)
 {:.note title="Chapter 4"}
 스레드의 개념과 멀티스레딩에 대해 학습합니다.
 
@@ -62,11 +62,11 @@ OS의 목적과 그 진화 과정에 대해 학습합니다.
 {:.note title="Chapter 5"}
 실제로 자주 사용되는 멀티프로세서, 멀티코어, 리얼타임에서의 스케쥴링 방식을 다룹니다.
 
-#### [Concurrency: Mutual Exclusion and Synchronization](/os/OS_10)
+#### [Concurrency: Mutual Exclusion and Synchronization](/studylog/os/OS_10)
 {:.note title="Chapter 6"}
 동시성 작업에서 발생할 수 있는 문제와 상호배제, 동기화의 필요성을 다룹니다.
 
-#### [Concurrency: Deadlock and Starvation](/os/OS_11)
+#### [Concurrency: Deadlock and Starvation](/studylog/os/OS_11)
 {:.note title="Chapter 7"}
 동시성 작업시 발생할 수 있는 deadlock 과 starvation 상태와 그 해결방법을 다룹니다.
 
