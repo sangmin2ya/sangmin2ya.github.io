@@ -12,12 +12,11 @@
             let prevElement;
             window.addEventListener("scroll", () => {
                 let hurdleTop = affixedDiv.getBoundingClientRect().top;
-                if(hurdleTop <= 100){ 
-                    tocElement.style.position = 'fixed';
-                    tocElement.style.top = '100px';
+                if(hurdleTop <= 0){ 
+                    tocElement.classList.add("affix");
                 }
-                else{ tocElement.style.position = 'absolute';
-                    tocElement.style.top = '340px';
+                else{ 
+                    tocElement.classList.remove("affix");
                 }
     
                 for(let i=0;i<headerList.length;i++){
