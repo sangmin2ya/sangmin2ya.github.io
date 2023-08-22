@@ -1,0 +1,284 @@
+---
+layout: post
+related_posts:
+title:  "Jekyll HYDEJACK 테마 커스텀[1] - 서브메뉴 만들기"
+date:   2023-08-22 11:00:00 +0900
+categories: 
+  - studylog
+  - hydejack
+image : 
+  path : /assets/img/blog/hydejack-9.jpg
+---
+* * *
+* toc
+{:toc}
+
+# 기본 HYDEJACK 카테고리 메뉴
+
+* * *
+
+Hydejack 테마에서 지원해주는 기본 카테고리들은 서브메뉴가 없는 단일 카테고리 형식이다.
+
+<ins>서브 카테고리를 이용해 더욱 간편한 포스팅 분류를 위해 **서브메뉴**를 제작해보기로 하였다.</ins>
+
+![Sidebar](/assets/img/blog/sidebar.PNG){:.centered width="100%"}
+
+
+# 무료버전과 PRO버전의 차이
+
+* **Hydejack**테마에는 무료버전인 **Starter-kit**와 구매해야 하는 **PRO**버전이 있는데, 아무래도 **PRO**버전에 비해서 무료버전은 커스터마이징의 폭이 좁고, 기능도 제한되어있어 보였다.
+
+실제로 참고하며 공부했던 여러 블로그또한 **PRO**버전을 사용하여 구현 방식의 차이가 있어보였고 큰 차이는 아니었지만 웹개발에 무지한 나로서는 꽤나 해맨 이유가 되었다.ㅋㅋ
+
+* 현재 2023년 8월 기준으로 배포중인 [**Hydejack 9.1.6버전**](https://hydejack.com/download/)의 경우에는 [기본버전](https://github.com/hydecorp/hydejack)과 [Starter-Kit](https://github.com/hydecorp/hydejack-starter-kit)로 나뉘어져 있는데, **HydeJack** 홈페이지에서는 더 빠르고, 간편하게 블로그를 시작할 수 있는 **Starter-Kit**를 추천하고 안내해주고 있다. 실제로 더 자세하게 설명되어 있어 세팅하기도 편한건 사실이다. 
+
+![](/assets/img/blog/hydejack.PNG){:.centered width="70%"}
+기본버전
+{:.figure}
+![](/assets/img/blog/starter kit.PNG){:.centered width="70%"}
+starter kit
+{:.figure}
+
+
+**하지만** 편의성을 개선한 만큼 커스텀할 수 있는 파일과 폴더들이 사라져 있어 다른 튜토리얼들을 따라하기에 힘든 부분이 있었다. 
+  * `_layouts`, `_includes` 등의 파일 내부에 스타일시트 파일들이 없으며, **bundle설치**를 통해 테마들을 한군데 모아서 보관함
+
+* **따라서 이번 글에서는 모두 "Starter-kit"를 사용하고 있다고 가정하고 작성하도록 하겠다.**
+
+## 추가해야 할 파일
+
+1. `assets/js/sidebar-folder.js` (js폴더와 sidebar-folder.js파일 모두 생성)
+2. `_includes/body/nav.html` (body폴더와 nav.html파일 모두 생성)
+3. `_featured_categories/추가할 하위 카테고리.markdown` 파일
+
+### sidebar-folder.js
+
+서브메뉴 구현시 화살표 방향과 check 유무를 변경하는 JS 함수
+
+~~~js
+//file: "sidebar-folder.js"
+function spread(count){
+    document.getElementById('folder-checkbox-' + count).checked = 
+    !document.getElementById('folder-checkbox-' + count).checked
+    document.getElementById('spread-icon-' + count).innerHTML = 
+    document.getElementById('spread-icon-' + count).innerHTML == 'arrow_right' ?
+    'arrow_drop_down' : 'arrow_right'
+  }
+~~~
+
+### nav.html
+
+```html
+<!-- file: "nav.html" -->
+{%- raw -%}
+<span class="sr-only">{{ site.data.strings.navigation | default:"Navigation" }}{{ site.data.strings.colon | default:":" }}</span>
+<ul>
+  {% if site.menu %}
+    {% for node in site.menu %}
+      {% assign url = node.url | default: node.href %}
+      {% assign count = count | plus: 1 %}
+      <li>
+        <div class="menu-wrapper">
+          {% if node.submenu %}
+            <button class="spread-btn" onclick="javascript:spread({{count}})">
+              <span id="spread-icon-{{count}}" class="material-icons">arrow_right</span>
+            </button>
+          {% endif %}
+          <a
+            {% if forloop.first %}id="_drawer--opened"{% endif %}
+            href="{% include_cached smart-url url=url %}"
+            class="sidebar-nav-item {% if node.external  %}external{% endif %}"
+            {% if node.rel %}rel="{{ node.rel }}"{% endif %}
+            >
+            {{ node.name | default:node.title }}
+          </a>
+        </div>
+        {% if node.submenu %}
+          <div class="menu-wrapper">
+            <input type="checkbox" id="folder-checkbox-{{count}}">
+            <ul>
+            {% for subnode in node.submenu %}
+              <li>
+                <a
+                  class="sidebar-nav-item {% if node.external  %}external{% endif %}"
+                  href="{% include_cached smart-url url=subnode.url %}"
+                  >
+                  {{ subnode.title }}
+                </a>
+              </li>
+            {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </li>
+    {% endfor %}
+  {% else %}
+    {% assign pages = site.pages | where: "menu", true %}
+    {% assign documents = site.documents | where: "menu", true %}
+    {% assign nodes = pages | concat: documents | sort: "order" %}
+
+    {% for node in nodes %}
+      {% unless node.redirect_to %}
+        <li>
+          <a
+            {% if forloop.first %}id="_navigation"{% endif %}
+            href="{{ node.url | relative_url }}"
+            class="sidebar-nav-item"
+            {% if node.rel %}rel="{{ node.rel }}"{% endif %}
+            >
+            {{ node.title }}
+          </a>
+        </li>
+      {% else %}
+        <li>
+          <a href="{{ node.redirect_to }}" class="sidebar-nav-item external">{{ node.title }}</a>
+        </li>
+      {% endunless %}
+    {% endfor %}
+  {% endif %}
+</ul>
+{% endraw %}
+```
+### 추가할 하위 카테고리.md
+
+이전 상위 카테고리와 동일하게 하위 카테고리를 만들어준다.
+
+후에 포스팅을 작성시 categories 설정에서 지정해준다.
+
+## 수정해야 할 파일
+
+1. `_sass/my-style.scss`
+2. `_includes/my-head.html`
+3. `config.yml`
+
+### my-style.scss
+
+이제 사이드바 메뉴의 스타일시트를 설정해준다. 만약, 추가로 변경하고 싶은 설정이 있다면, 
+
+`\vendor\bundle\ruby\3.2.0\gems\jekyll-theme-hydejack-9.1.6\_includes\body` 
+
+의 sidebar관련 html파일의 각 **Class**이름을 확인하고 설정 가능하다.
+
+~~~css
+/*file: "my-style.scss"*/
+.sidebar-sticky {
+  height: 100%;
+  padding-top: 5%;
+  position: absolute;
+}
+.sidebar-about {
+  padding-bottom:10%;
+}
+.spread-btn{
+  left: 7%;
+  position: absolute;
+  padding: 0;
+  padding-top: 5px;
+  border: none;
+  background: none;
+  color: white;
+  cursor: pointer;
+}
+
+.spread-btn:hover{
+  color: grey;
+}
+
+.menu-wrapper{
+  display: flex;
+  text-align: left;
+  margin-left: 10%;
+  margin-bottom: 0%;
+  
+  input[type=checkbox]{
+    display: none;
+  }
+  
+  input[type=checkbox] ~ ul{
+    display: none;
+    list-style: none;
+  }
+  
+  input[type=checkbox]:checked ~ ul{
+    display: block;
+  }
+}
+~~~
+
+### my-head.html
+
+**head**에 사용할 js 함수와 폰트를 선언해준다.
+
+~~~html
+<!-- file: "my-head.html"-->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="/assets/js/sidebar-folder.js"></script>
+~~~
+
+### config.yml
+
+이제 마지막으로 추가한 서브 카테고리들을 `config.yml`의 메인 카테고리들 하위에 추가해준다
+
+양식은 다음과 같다.
+
+~~~yml
+# file: "config.yml"
+# Add links to the sidebar.
+menu:
+  - title:             ABOUT
+    url:               /about/
+  - title:             STUDY LOG
+    url:               /studylog/
+    submenu: 
+      - title:         OS
+        url:           /os/
+      - title:         NETWORK
+        url:           /network/
+      - title:         HYDEJACK
+        url:           /hydejack/
+  - title:             GAME DEVELOG
+    url:               /gamedevelog/
+    submenu:
+      - title:         UNREAL ENGINE
+        url:           /unrealengine/
+  - title:             GAME ANALYSIS
+    url:               /gameanalysis/
+  - title:              BAEKJOON
+    url:               /baekjoon/
+~~~
+
+## 포스팅
+
+왼쪽 메뉴에도 문제없이 카테고리가 추가되었고, **spread**가 정상적으로 되고, 각 카테고리를 누르면 링크도 잘 연결된다면 
+
+**모든준비가 끝났다!!**
+
+<ins>이제 포스팅을 작성할때 `categories` 탭에 상위, 하위 순서대로 2개 혹은 그 이상의 카테고리를 추가해 주면 된다!</ins>
+
+제 포스팅의 예시를 들어보겠다.
+
+```yml
+# file: "하위 카테고리의 포스팅.md 예시"
+layout: post
+related_posts:
+  - /studylog/os/OS_9/
+  - /studylog/os/OS_11/
+title:  "오퍼레이팅 시스템 [10] - Synchronization"
+date:   2023-08-14 11:00:00 +0900
+categories: 
+  - studylog
+  - os
+description: >
+  'Race condition을 예방하는 동기화기법'
+```
+* * *
+![](/assets/img/blog/sub example.PNG){:.centered width="90%"}
+
+**구현이 잘 된다!**
+
+# 참고 블로그
+>이번 글의 코드는 해당 블로그에서 참고하여 변경, 인용한 것임을 알림
+>
+>[1n9yun's blog](https://1n9yun.github.io/posts/how-i-customized-hydejack-2-spread/)
+>
+>[Lazy Ren's blog](https://lazyren.github.io/devlog/adding-foldable-submenu-to-the-sidebar)

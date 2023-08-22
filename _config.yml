@@ -57,6 +57,8 @@ menu:
         url:           /os/
       - title:         NETWORK
         url:           /network/
+      - title:         HYDEJACK
+        url:           /hydejack/
   - title:             GAME DEVELOG
     url:               /gamedevelog/
     submenu:

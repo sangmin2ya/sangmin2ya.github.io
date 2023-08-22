@@ -14,18 +14,12 @@
 }
 .sidebar-sticky {
   height: 100%;
-  padding-top: 7%;
+  padding-top: 5%;
   position: absolute;
 }
-
 .sidebar-about {
-  padding-bottom:20%;
+  padding-bottom:10%;
 }
-.sidebar-nav-item {
-  padding: 3px;
-  width:200%;
-}
-
 .spread-btn{
   left: 7%;
   position: absolute;
@@ -45,14 +39,17 @@
   display: flex;
   text-align: left;
   margin-left: 10%;
+  margin-bottom: 0%;
   
   input[type=checkbox]{
     display: none;
   }
+  
   input[type=checkbox] ~ ul{
     display: none;
     list-style: none;
   }
+  
   input[type=checkbox]:checked ~ ul{
     display: block;
   }
