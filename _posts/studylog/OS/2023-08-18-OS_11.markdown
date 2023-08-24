@@ -1,0 +1,92 @@
+---
+layout: post
+related_posts:
+  - /studylog/os/OS_10/
+  - /studylog/os/OS_12/
+title:  "오퍼레이팅 시스템 [11] - 조건동기화"
+date:   2023-08-18 11:00:00 +0900
+categories: 
+  - studylog
+  - os
+description: >
+  '조건동기화란?'
+---
+* * *
+* toc
+{:toc}
+
+# 조건동기화
+
+* **Condition Synchronization**
+  * 전 챕터에서 알아본 **상호배제**뿐만이 아니라 특정 조건에서 동기화를 시키는 **조건 동기화**라는 개념이 필요하다.
+
+## Condition Variable(CV) 
+* 프로세스가 특정 조건을 만족하기 전까지 Block시키는 Data Type
+
+* CV는 특정 조건을 만족할 때 까지 기다릴 Waiting Queue가 필요하다.
+
+* Operations
+  1. `wait()` : 조건을 만족하지 않으면 sleep시킨다.
+  2. `signal()` : 조건을 만족하면 하나의 기다리는 Thread를 깨운다.
+  3. `broadcast()` : 모든 대기중인 Thread들을 깨운다.
+
+```
+* pthread API : POSIX calls
+  1. pthread_cond_wait(pthread_cond_t *c, pthread_mutex_t *m);
+  2. pthread_cond_signal(pthread_cond_t *c);
+  3. pthread_cond_broadcast()
+  - Mutex와 함께 사용되도록 설계되어있다.
+```
+## join()의 예시
+
+* JAVA에서 Thread 클래스의 `join()` 메소드를 본적이 있을것이다.
+   
+   이번엔 POSIX의 pthread API 함수를 이용하여 이의 작동 방식을 구현해 보도록 하겠다.
+  
+* `join()`이란 Thread를 제어할 수 있는 함수로, 다른 Thread의 작업이 종료될 때까지 기다리게한다.
+
+>* 필요조건들
+>  1. State Variable : Thread 실행에 필요한 조건 변수
+>  2. 조건 변수를 위한 상호배제 LOCK
+>  3. 조건 변수의 상태를 확인하기 위한 LOOP Checking
+
+* **부모 Thread**
+
+~~~c
+//file: "Thread-1"
+int main(){
+  pthread_t c; 
+  pthread_create(&c, NULL, child, NULL) //자식스레드 생성
+  thr_join(); //생성한 자식스레드가 종료될때까지 대기하는 함수
+  //좀비 스레드를 예방한다.
+  return 0;
+}
+void thr_join(){
+  pthread_mutex_lock(&m);//Mutex를 활용한 조건변수에 접근을 막는 상호배제
+  while(done == 0){//done = 조건변수
+    pthread_cond_wait(&c, &m);//signal(&c)를 할때까지 sleep
+    /*이때 Mutex 객체를 매개변수로 받는 이유는, 앞서 상호배제를 위해 한 LOCK을 풀고 sleep 함으로서, 
+    자식 스레드가 실행되어 exit()함수를 실행할수 있게 하기 위함이다.
+    일어나면 다시 LOCK을 건다.*/
+    pthread_mutex_unlock(&m);
+  }
+}
+~~~
+
+* **자식 Thread**
+
+~~~c
+//file: "Thread-2"
+void* child(void* arg){
+  thr_exit();//Thread를 종료시키며 부모 Thread에게 알린다.
+  return NULL;
+}
+void * thr_exit(){
+  pthread_mutex_lock(&m);
+  done = 1; //부모 Thread의 실행 조건을 만족시켜준다.
+  pthread_cond_signal(&c);//깨우는 함수 signal
+  pthread_mutex_unlock(&m);
+}
+~~~
+
+**State Variable(조건변수)**가 없거나 Mutex를 이용한 **상호배제**가 없으면 무한히 Sleep 되는 등의 치명적인 오류가 발생한다!

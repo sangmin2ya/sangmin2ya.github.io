@@ -1,0 +1,118 @@
+---
+layout: post
+related_posts:
+  - /studylog/os/OS_11/
+  - /studylog/os/OS_13/
+title:  "오퍼레이팅 시스템 [12] - 생산자/소비자 문제, 독자/저자 문제"
+date:   2023-08-24 11:00:00 +0900
+categories: 
+  - studylog
+  - os
+description: >
+  상호배제와 조건 동기화로 Producer/Consumer, Reader/Writer Problem 을 해결해보자
+image: /assets/img/blog/OS/producer consumer.PNG
+---
+* * *
+* toc
+{:toc}
+
+# 생산자 / 소비자 문제
+
+* **Producer/Consumer Problem**으로 널리 알려져있는 문제를 해결해보자.
+  * **Bounded Buffer Prob**으로도 알려져 있다.
+  * **상호배제**와 **조건동기화**를 활용해야 한다.
+  * 공유자원인 **Buffer** 존재
+
+* 유한 Buffer 일때 (생산자, 소비자 제약) : 
+  * <ins>**생산자**역할을 하는 Thread</ins>
+    * 조건 : Buffer가 꽉차면 대기해야한다.
+  * <ins>**소비자**역할을 하는 Thread</ins>
+    * 조건 : Buffer가 비면 대기해야한다.
+
+* 무한 Buffer 일때 (소비자 제약):
+  * <ins>**생산자**역할을 하는 Thread</ins>
+    * 조건없이 계속 생산가능
+  * <ins>**소비자**역할을 하는 Thread</ins>
+    * 조건 : Buffer가 비면 대기해야한다.
+
+* * *
+## CV를 활용한 해결
+
+### 무한 Buffer의 경우
+
+* 소비자에게만 제약이 걸려있는 경우로, `producer()`는 `wait()`함수가 필요하지 않다.
+
+~~~c
+//file: "생산자 Thread"
+void producer(){
+  while(1){
+    pthread_mutex_lock(&m);//Mutual exclude
+    put(value); //Buffer에 물건을 하나 채운다
+    pthread_cond_signal(&c); //소비자를 깨운다
+    pthread_mutex_unlock(&m);
+  }
+}
+~~~
+
+~~~c
+//file: "소비자 Thread"
+void consumer(){
+  while(1){
+    pthread_mutex_lock(&m);//Mutual exclude
+    while(count==0){
+      pthread_cond_wait(&c, &m);//Buffer에 물건이 없으면 대기(소비자 제약)
+    }
+    get();//Buffer에서 물건을 하나 소비한다.
+    pthread_mutex_unlock(&m);
+  }
+}
+~~~
+
+### 유한 Buffer의 경우
+
+~~~c
+//file: "생산자 Thread"
+void producer(){
+  while(1){
+    pthread_mutex_lock(&m);//Mutual exclude
+    while(count==MAX){
+      pthread_cond_wait(&empty, &m);//Buffer에 꽉차있으면 대기(생산자 제약)
+    }
+    put(value);
+    pthread_cond_signal(&fill); //채웠다고 소비자를 깨운다
+    pthread_mutex_unlock(&m);
+  }
+}
+~~~
+
+~~~c
+//file: "소비자 Thread"
+void consumer(){
+  while(1){
+    pthread_mutex_lock(&m);//Mutual exclude
+    if(cound==0){
+      pthread_cond_wait(&fill, &m);//Buffer에 물건이 없으면 대기(소비자 제약)
+    }
+    get();//Buffer에서 물건을 하나 소비한다.
+    pthread_cond_signal(&empty);//빈자리가 있다고 생산자를 깨운다
+    pthread_mutex_unlock(&m);
+  }
+}
+~~~
+
+### 차이점
+
+* **무한버퍼**의 경우 소비자 Thread 에게만 제약이 있으므로, **1개**의 `pthread_cond_t` 객체만 사용해도 되지만, (`c`) 
+<br><br>
+**유한버퍼**의 경우 생산자와 소비자 Thread모두 제약이 있으므로 **2개**의 `pthread_cond_t` 객체를 사용하여 각각의 전용 `wait()`, `signal()`함수를 사용해야한다. (`fill`, `empty`)
+<br><br>
+그렇지 않을시 다수의 생산자, 소비자가 있는경우 `signal()`함수로 잘못된 Thread를 깨우는 경우가 발생한다.
+<br><br>
+
+* `IF`문이 아니라 `while`문을 사용하여 **State variable(조건변수)**의 상태를 확인하는 이유 
+: `if`문을 사용하면, 조건에 부합하여 `wait()`함수를 통해 sleep된 후, `signal()`함수에 의해 깨어난 다음, **Condition**을 다시 Check하지 않고 그대로 실행하므로 만약에 조건변수가 바뀌었어도 이를 알아차리지 못하고 실행되어 오류가 발생할 수 있다.
+  * **따라서!** `while`문을 사용하여 깨어난 후에, 조건변수가 바뀌지않았더라도, 다시 한번 **RE-CHECKING** 해줌으로서 일어날 수 있는 오류를 방지한다!
+
+## Semephore를 활용한 해결
+
+  * 앞서 알아봤던 것 처럼 **Semaphore**는 상호배제뿐만이 아니라 Semaphore객체의 값을 설정함으로써 조건동기화의 기능도 할 수 있다. (**Counting Semaphore** - 범용 semaphore의 경우)
