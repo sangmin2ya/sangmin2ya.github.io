@@ -115,4 +115,48 @@ void consumer(){
 
 ## Semephore를 활용한 해결
 
-  * 앞서 알아봤던 것 처럼 **Semaphore**는 상호배제뿐만이 아니라 Semaphore객체의 값을 설정함으로써 조건동기화의 기능도 할 수 있다. (**Counting Semaphore** - 범용 semaphore의 경우)
+  * 앞서 알아봤던 것 처럼 **Semaphore**는 상호배제뿐만이 아니라 Semaphore객체의 값을 설정함으로써 조건동기화의 기능도 할 수 있다. 
+
+  * **Semaphore**를 **Condition Variable**로 사용하는 경우
+    * 세마포어 함수 `sem_t s;`
+      1. `sem_wait(&s)` : 세마포어의 값을 하나 빼주고, 만약 값이 음수라면 block하고 queue로 들어가고, 양수라면 실행됨
+      2. `sem_post(&s)` : `signal()`과 같으며 세마포어의 값을 하나 더해주고, queue에 있는 스레드를 하나 실행한다.
+      3. `sem_init(&s,0,1)`: 세마포어 초기화. 두번째값은 세마포어의 프로세스간 공유여부, 세번째값이 세마포어의 초기 값을 설정한다.
+  <br>
+  * **필요한 세마포어 객체들**
+    * `empty` : 세마포어 값을 유한버퍼의 최대크기로 초기화한다. 간단하게 현재 buffer에 **비어있는 공간의 크기**라고 생각한다.
+    * `fill` : 세마포어의 값을 0으로 초기화한다. 간단하게 현재 buffer에 **차있는 공간의 크기**라고 생각한다.
+    * `m` : binary 세마포어로 값을 1로 초기화한다. 상호배제를 위해 쓰인다.
+
+* * *
+
+~~~c
+//file: "생산자 Thread"
+void producer(){
+  sem_wait(&empty);//생산할때마다 세마포어값(남아있는 공간)을 1씩 감소시키며, 음수일 경우 block후 queue로 들어간다.
+  sem_wait(&m);//생산을 위해 buffer에 접근할때를 위한 상호배제(m은 binary semaphore객체)
+  put(value);
+  sem_post(&m);
+  sem_post(&fill);//채우고 세마포어값(차있는 공간)을 1씩 증가시키며, 소비자가 실행될 수 있도록함
+}
+~~~
+
+~~~c
+//file: "소비자 Thread"
+void consumer(){
+  sem_wait(&fill);//소비할때마다 세마포어값(비어있는 공간)을 1씩 감소시키며, 음수일 경우 block후 queue로 들어간다.
+  sem_wait(&m);
+  get();
+  sem_post(&m);
+  sem_post(&empty);//비우고 세마포어값(남아있는 공간)을 1씩 증가시키며 생산자가 실행될 수 있도록함
+}
+~~~
+
+* **Semaphore의 단점** 
+: [전에 말한것처럼](/studylog/os/OS_10/#deadlock) **DEADLOCK**이라고 불리는 교착상태에 빠질 수 있다.
+
+# 독자 / 저자 문제
+
+## 독자 우선순위
+
+## 저자 우선순위
